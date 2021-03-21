@@ -1,0 +1,22 @@
+#~/bin/sh -login
+
+#PBS -P RDS-FSC-microanal-RW
+#PBS -l walltime=3:00:00
+#PBS -l mem=2GB
+
+#PBS -N adlib
+#PBS -e results/adlib/term/
+#PBS -o results/adlib/term/
+
+#### array job ####
+#PBS -J 0-249
+
+DIR=results/swarm_metric_v3/heterogeneous
+
+
+cd /project/microanal/swarm_metric_paper/motilisim
+REPDIR=$DIR/rep$PBS_ARRAY_INDEX
+
+java -Xms2000m -Xmx2000m -classpath "lib/*:j3dlibs/*" core.SimulationChemotacticAgent -p $DIR/parameters.xml -o $REPDIR -s $PBS_ARRAY_INDEX
+
+python swarm_metric/bolus_distance_from_position.py -i $REPDIR
